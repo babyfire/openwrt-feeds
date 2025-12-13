@@ -12,7 +12,7 @@ PKG_MAINTAINER:=babyfire <ieric@163.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_BUILD_PARALLEL:=1
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -25,30 +25,33 @@ define Package/vlmcsd
 endef
 
 define Package/vlmcsd/description
-	KMS Emulator in C.
+	KMS emulator for Microsoft Volume Activation.
 endef
 
-define Build/Prepare
-	$(call Build/Prepare/Default)
-	rm $(PKG_BUILD_DIR)/GNUmakefile
+define Build/Compile
+	$(MAKE) -C $(PKG_BUILD_DIR) \
+		CC="$(TARGET_CC)" \
+		CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) -Wall -Wextra -O2" \
+		LDFLAGS="$(TARGET_LDFLAGS) -lpthread" \
+		vlmcsd
 endef
 
 define Package/vlmcsd/conffiles
 	/etc/config/vlmcsd
-	/etc/vlmcsd/vlmcsd.ini
-	/etc/vlmcsd/vlmcsd.kmd
 endef
 
 define Package/vlmcsd/install
-	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/vlmcsd $(1)/usr/sbin/vlmcsd
 
+	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) $(CURDIR)/files/vlmcsd.config $(1)/etc/config/vlmcsd
 
 	$(INSTALL_DIR) $(1)/etc/vlmcsd
-	$(INSTALL_CONF) $(CURDIR)/files/vlmcsd.ini $(1)/etc/vlmcsd/vlmcsd.ini
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/etc/vlmcsd.ini $(1)/etc/vlmcsd/vlmcsd.ini
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/etc/vlmcsd.kmd $(1)/etc/vlmcsd/vlmcsd.kmd
 
+	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(CURDIR)/files/vlmcsd.init $(1)/etc/init.d/vlmcsd
 endef
 
