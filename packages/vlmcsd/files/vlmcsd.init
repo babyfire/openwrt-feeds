@@ -55,10 +55,6 @@ unset_smartdns_srv() {
 	fi
 }
 
-# service_triggers() {
-# 	procd_add_reload_trigger vlmcsd
-# }
-
 start_service() {
 	get_config
 
@@ -174,21 +170,3 @@ stop_service() {
 	fi
 	return 0
 }
-
-# restart() {
-# 	echo "Restarting KMS Server..."
-# 	stop_service
-# 	sleep 1
-# 	if start_service; then
-# 		echo "KMS Server has restarted successfully."
-# 		return 0
-# 	else
-# 		echo "KMS Server restart failed."
-# 		return 1
-# 	fi
-# }
-
-# reload() {
-# 	restart
-# 	return $?
-# }
