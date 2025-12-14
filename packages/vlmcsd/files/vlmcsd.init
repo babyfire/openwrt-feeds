@@ -11,63 +11,92 @@ CONF_FILE="/etc/config/vlmcsd"
 PID_FILE="/run/vlmcsd.pid"
 LOG_FILE="/var/log/vlmcsd.log"
 
-if [ ! -d "/run" ]; then
-	PID_FILE="/var/run/vlmcsd.pid"
-fi
+RESPAWN_THRESHOLD=3600
+RESPAWN_TIMEOUT=5
+RESPAWN_RETRY=5
+
+[ ! -d "/run" ] && PID_FILE="/var/run/vlmcsd.pid"
+
 
 get_config() {
 	config_load "vlmcsd"
 	config_get_bool enabled "main" "enabled" 0
 	config_get_bool auto_activate "main" "auto_activate" 0
-    config_get listen 'main' 'listen' '0.0.0.0:1688'
-    config_get log_verbose 'main' 'log_verbose' 0
+	config_get listen 'main' 'listen' '0.0.0.0:1688'
+	config_get log_verbose 'main' 'log_verbose' 0
 	config_get_bool syslog 'main' 'syslog' 0
 }
 
 set_smartdns_srv() {
-	local HOSTNAME=$(uci get system.@system[0].hostname)
-	grep "^srv-record /_vlmcs._tcp" /etc/smartdns/custom.conf >/dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		# srv-record /_vlmcs._tcp/OpenWrt,1688,1,1
-		sed -i '$a\srv-record /_vlmcs._tcp/'$HOSTNAME',1688,1,1' /etc/smartdns/custom.conf
-		/etc/init.d/smartdns reload
-	fi
+
+	[ ! -x "/etc/init.d/smartdns" ] && return 1
+	[ ! -f "/etc/smartdns/custom.conf" ] && return 1
+
+	local HOSTNAME
+	HOSTNAME=$(uci get system.@system[0].hostname 2>/dev/null)
+	[ -z "${HOSTNAME}" ] && HOSTNAME="OpenWrt"
+
+	# 转义特殊字符，避免 sed 错误
+	HOSTNAME=$(echo "${HOSTNAME}" | sed 's/[\/&]/\\&/g')
+
+	grep -q "^srv-record /_vlmcs._tcp/${HOSTNAME}," /etc/smartdns/custom.conf 2>/dev/null && return 0
+
+	echo "srv-record /_vlmcs._tcp/${HOSTNAME},1688,1,1" >> /etc/smartdns/custom.conf
+	/etc/init.d/smartdns reload 2>/dev/null || /etc/init.d/smartdns restart 2>/dev/null
 }
 
 unset_smartdns_srv() {
-	grep "^srv-record /_vlmcs._tcp" /etc/smartdns/custom.conf >/dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		return 1
+	[ ! -f "/etc/smartdns/custom.conf" ] && return 1
+
+	sed -i '/^srv-record \/_vlmcs\._tcp\//d' /etc/smartdns/custom.conf 2>/dev/null || return 1
+
+	if /etc/init.d/smartdns running 2>/dev/null; then
+		/etc/init.d/smartdns reload 2>/dev/null || true
 	fi
-	sed -i '/^srv-record \/_vlmcs\._tcp/d' /etc/smartdns/custom.conf
-	/etc/init.d/smartdns reload
 }
 
 # service_triggers() {
 # 	procd_add_reload_trigger vlmcsd
 # }
 
-service_stopped() {
-	config_load "vlmcsd"
-	config_foreach unload_service "vlmcsd"
-}
-
 start_service() {
 	get_config
 
-	# # 如果未启用则退出
-	[ "$enabled" -eq 0 ] && return 0
+	# 如果未启用则退出
+	[ "$enabled" -eq 0 ] && {
+		echo "KMS Server is disabled in config."
+		return 0
+	}
 
-	if [ -f "$PID_FILE" ]; then
-		echo "KMS Server has already started."
+	# 检查程序文件是否存
+	if [ ! -f "$PROG" ]; then
+		echo "Error: $PROG not found!"
 		return 1
 	fi
 
-	# 创建日志目录（如果需要）
-    [ "$syslog" = "0" ] && mkdir -p "$(dirname "$LOG_FILE")"
+	# 检查程序文件是否可执行
+	if [ ! -x "$PROG" ]; then
+		echo "Error: $PROG not executable!"
+		return 1
+	fi
 
-	# 构建启动参数
-	local cmd_args=$(build_command_args)
+	# 检查 PID 文件并验证进程是否真的在运行
+	if [ -f "$PID_FILE" ]; then
+		local pid=$(cat "$PID_FILE" 2>/dev/null)
+
+		if [ -n "$pid" ] && ps | awk '{print $1}' | grep -w "$pid" >/dev/null 2>&1; then
+			if ps | grep -w "$pid" | grep -v grep | grep -q "$(basename "$PROG")"; then
+				echo "KMS Server has already started (PID: $pid)."
+				return 1
+			fi
+		fi
+
+		echo "Removing stale PID file: $PID_FILE"
+		rm -f "$PID_FILE"
+	fi
+
+	# 创建日志目录（如果需要）
+	[ "$syslog" -eq 0 ] && mkdir -p "$(dirname "$LOG_FILE")"
 
 	procd_open_instance "$SERVICE_NAME"
 	procd_set_param command "$PROG"
@@ -75,47 +104,91 @@ start_service() {
 	# 监听地址
 	procd_append_param command -L "$listen"
 
+	# pid
+	procd_append_param command -p "$PID_FILE"
+
 	# 详细日志记录
-	if [ "$log_verbose" = '1']; then
-		procd_append_param command -v
-	fi
+	[ "$log_verbose" -eq 1 ] && procd_append_param command -v
 
-	# 日志文件
-	# procd_append_param command -l /var/log/vlmcsd.log
+	# 配置文件监控
+	[ -f "$CONF_FILE" ] && procd_set_param file "$CONF_FILE"
 
-	if [ -f "$CONFIG_UCI_FILE" ]; then
-		procd_set_param file reload $CONF_FILE
-	fi
-
-	# procd_set_param term_timeout 60
 
 	# 进程管理参数
-	procd_set_param pidfile $PID_FILE
-	procd_set_param respawn ${respawn_threshold:-3600} ${respawn_timeout:-5} ${respawn_retry:-5}
+	# procd_set_param pidfile "$PID_FILE"
+	procd_set_param respawn "$RESPAWN_THRESHOLD" "$RESPAWN_TIMEOUT" "$RESPAWN_RETRY"
+	procd_set_param term_timeout 10
 
-	# 日志重定向
-	procd_set_param stdout 1
-	procd_set_param stderr 1
-	# procd_set_param logfile "$LOG_FILE"
+	# 日志配置
+	if [ "$syslog" -eq 0 ]; then
+		procd_set_param stdout 0
+		procd_set_param stderr 0
+		procd_append_param command -l "$LOG_FILE"
+	else
+		procd_set_param stdout 1
+		procd_set_param stderr 1
+		procd_append_param command -l syslog
+	fi
+
+	# 环境变量（防止字符集问题）
+	procd_set_param env LANG=C LC_ALL=C
 
 	procd_close_instance
 
-	[ "$auto_activate" = "1" ] && set_smartdns_srv
+	[ "$auto_activate" -eq 1 ] && set_smartdns_srv
 
 	echo "KMS Server started successfully."
+	return 0
 }
 
 stop_service() {
-	if [ ! -f "$PID_FILE" ]; then
-		echo "KMS Server is not running."
+	unset_smartdns_srv
+
+	if [ -f "$PID_FILE" ]; then
+		local pid=$(cat "$PID_FILE" 2>/dev/null)
+		if [ -n "$pid" ] && ps | awk '{print $1}' | grep -w "$pid" >/dev/null 2>&1; then
+			kill "$pid" 2>/dev/null
+			sleep 2
+			# 强制杀死未退出的进程
+			if ps | awk '{print $1}' | grep -w "$pid" >/dev/null 2>&1; then
+				kill -9 "$pid" 2>/dev/null
+				sleep 1
+			fi
+			[ -f "$PID_FILE" ] && rm -f "$PID_FILE"
+			echo "KMS Server has stopped (PID: $pid)."
+		else
+			echo "Removing stale PID file: $PID_FILE"
+			rm -f "$PID_FILE"
+		fi
 	else
-		procd_kill "$SERVICE_NAME"
-		echo "KMS Server has stopped."
+		# 查找并杀死所有未通过PID文件管理的进程
+		local running_pids=$(ps | grep -w "$(basename "$PROG")" | grep -v grep | awk '{print $1}')
+		if [ -n "$running_pids" ]; then
+			for pid in $running_pids; do
+				kill -9 "$pid" 2>/dev/null
+				echo "KMS Server stopped (PID: $pid) - no PID file found."
+			done
+		else
+			echo "KMS Server is not running."
+		fi
 	fi
+	return 0
 }
 
-restart() {
-	stop
-	start
-	echo "KMS Server has restarted."
-}
+# restart() {
+# 	echo "Restarting KMS Server..."
+# 	stop_service
+# 	sleep 1
+# 	if start_service; then
+# 		echo "KMS Server has restarted successfully."
+# 		return 0
+# 	else
+# 		echo "KMS Server restart failed."
+# 		return 1
+# 	fi
+# }
+
+# reload() {
+# 	restart
+# 	return $?
+# }
