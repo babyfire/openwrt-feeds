@@ -1,0 +1,67 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:72
+msgid "Auto activate"
+msgstr "自动激活"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:58
+msgid "Collecting data ..."
+msgstr "正在收集数据..."
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:70
+msgid "Enable"
+msgstr "启用"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:67
+msgid "General Settings"
+msgstr "常规设置"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:22
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:37
+msgid "KMS"
+msgstr "KMS"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:37
+msgid "Key Management Service"
+msgstr "密钥管理服务"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:74
+msgid "Listen"
+msgstr "监听地址"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:68
+msgid "Log"
+msgstr "日志"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:80
+msgid "Log Verbose"
+msgstr "详细日志"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:19
+msgid "NOT RUNNING"
+msgstr "未运行"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:96
+msgid "No log data available."
+msgstr "没有可用的日志数据。"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:77
+msgid "Port"
+msgstr "端口"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:19
+msgid "RUNNING"
+msgstr "运行中"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:63
+msgid "Settings"
+msgstr "设置"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:84
+msgid "log_view"
+msgstr "查看日志"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:81
+msgid "syslog"
+msgstr "系统日志"

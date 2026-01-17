@@ -1,0 +1,67 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:72
+msgid "Auto activate"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:58
+msgid "Collecting data ..."
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:70
+msgid "Enable"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:67
+msgid "General Settings"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:22
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:37
+msgid "KMS"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:37
+msgid "Key Management Service"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:74
+msgid "Listen"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:68
+msgid "Log"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:80
+msgid "Log Verbose"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:19
+msgid "NOT RUNNING"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:96
+msgid "No log data available."
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:77
+msgid "Port"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:19
+msgid "RUNNING"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:63
+msgid "Settings"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:84
+msgid "log_view"
+msgstr ""
+
+#: /usr/src/openwrt-feeds/luci-app-kms/htdocs/luci-static/resources/view/kms/kms.js:81
+msgid "syslog"
+msgstr ""

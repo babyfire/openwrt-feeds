@@ -1,0 +1,25 @@
+{
+    "luci-app-kms": {
+        "description": "Grant access to KMS RPC call",
+        "read": {
+            "ubus": {
+                "service": [
+                    "list"
+                ]
+            },
+            "uci": [
+                "kms"
+            ],
+            "file": {
+                "/var/log/kms.log": [
+                    "read"
+                ]
+            }
+        },
+        "write": {
+            "uci": [
+                "kms"
+            ]
+        }
+    }
+}

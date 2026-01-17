@@ -1,0 +1,17 @@
+{
+    "admin/services/kms": {
+        "title": "KMS",
+        "action": {
+            "type": "view",
+            "path": "kms/kms"
+        },
+        "depends": {
+            "acl": [
+                "luci-app-kms"
+            ],
+            "uci": {
+                "kms": true
+            }
+        }
+    }
+}

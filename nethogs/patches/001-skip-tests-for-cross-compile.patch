@@ -1,0 +1,13 @@
+diff --git a/src/MakeApp.mk b/src/MakeApp.mk
+index 0053065..25e3607 100644
+--- a/src/MakeApp.mk
++++ b/src/MakeApp.mk
+@@ -57,7 +57,7 @@ TESTS=conninode_test
+ 
+ .PHONY: test
+ test: $(TESTS)
+-	for test in $(TESTS); do echo $$test ; ./$$test ; done
++	for test in $(TESTS); do echo skipping $$test -- cross-compiling!; done
+ 
+ .PHONY: clean
+ clean:
