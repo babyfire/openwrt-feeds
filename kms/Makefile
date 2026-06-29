@@ -11,7 +11,8 @@ PKG_VERSION:=1113
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/Wind4/vlmcsd/tar.gz/refs/tags/$(PKG_VERSION)?
+# https://codeload.github.com/Wind4/vlmcsd/tar.gz/refs/tags/svn1113
+PKG_SOURCE_URL:=https://codeload.github.com/Wind4/vlmcsd/tar.gz/refs/tags/svn$(PKG_VERSION)?
 PKG_HASH:=62f55c48f5de1249c2348ab6b96dabbe7e38899230954b0c8774efb01d9c42cc
 
 PKG_MAINTAINER:=BabyFire <babyfire@email.com>
