@@ -18,7 +18,7 @@ PKG_HASH:=62f55c48f5de1249c2348ab6b96dabbe7e38899230954b0c8774efb01d9c42cc
 PKG_MAINTAINER:=BabyFire <babyfire@email.com>
 
 PKG_BUILD_PARALLEL:=1
-PKG_BUILD_DIR:=$(BUILD_DIR)/vlmcsd-$(PKG_VERSION)
+PKG_BUILD_DIR:=$(BUILD_DIR)/vlmcsd-svn$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
